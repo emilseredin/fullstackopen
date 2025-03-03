@@ -1,2 +1,5 @@
 node_modules
 fiddle
+eslint.config.js
+vite.config.js
+public
