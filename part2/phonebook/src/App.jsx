@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Filter from './components/filter'
 import Form from './components/form'
+import Persons from './components/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -12,24 +13,64 @@ const App = () => {
   
   const [filteredPersons, setFilteredPersons] = useState(persons)
 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+
+  const handleNameChange = event => setNewName(event.target.value)
+  const handleNumberChange = event => setNewNumber(event.target.value)
+  
+  const handleSearch = event => {
+    const chars = event.target.value
+
+    setFilteredPersons(persons.filter(
+      person => person.name.toLowerCase().includes(chars.toLowerCase())))
+  }
+
+  const addPerson = event => {
+      event.preventDefault()
+      if (!newNumber) {
+          alert('Please enter a phone number')
+          return
+      }
+
+      if (isPresent(newName)) {
+        alert(`${newName} is already in the phonebook`)
+        return
+      }
+
+      const person = {
+        name: newName,
+        number: newNumber
+      }
+      
+      setPersons(persons.concat(person))
+      
+      setNewName('')
+      setNewNumber('')
+  }
+
+  const isPresent = name => {
+    if (persons.map(person => person.name).includes(name)) {
+      return true
+    }
+
+    return false
+  }
+
   return (
     <div>
-      <h2>Phonebook</h2>
-      
+      <h2>Phonebook</h2> 
       <Filter 
-        persons={persons}
-        setFilteredPersons={setFilteredPersons}/>
+        handleSearch={handleSearch}/>
       <h3>Add a new</h3>
       <Form 
-        persons={persons}
-        filteredPersons={filteredPersons}
-        setPersons={setPersons}
-        setFilteredPersons={setFilteredPersons}/>
+        addPerson={addPerson}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+        newName={newName}
+        newNumber={newNumber}/>
       <h3>Numbers</h3>
-      <div>
-        {filteredPersons.map((person, index) => 
-          <p key={index + 1}>{person.name} {person.number}</p>)}
-      </div>
+      <Persons visiblePersons={filteredPersons}/>
     </div>
   )
 }
